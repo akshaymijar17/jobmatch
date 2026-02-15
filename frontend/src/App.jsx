@@ -27,8 +27,8 @@ function App() {
     formData.append('resume', resume);
 
     try {
-      // Use relative path for deployment flexibility (handled by Nginx/Vite proxy)
-      const response = await fetch('/analyze', {
+      // API path for DigitalOcean App Platform routing
+      const response = await fetch('/api/analyze', {
         method: 'POST',
         body: formData,
       });
