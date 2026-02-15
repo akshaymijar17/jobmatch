@@ -1,0 +1,19 @@
+# Ignore system files
+.DS_Store
+
+# Ignore Environment Variables (Security)
+.env
+backend/.env
+
+# Ignore Python dependencies and build artifacts
+backend/venv/
+backend/__pycache__/
+*.pyc
+
+# Ignore Node dependencies and build artifacts
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# Ignore logs
+*.log

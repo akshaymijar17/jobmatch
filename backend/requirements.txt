@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+python-multipart
+pdfminer.six
+beautifulsoup4
+requests
+python-dotenv
+google-genai
+slowapi
