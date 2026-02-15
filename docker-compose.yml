@@ -2,7 +2,9 @@ version: '3.8'
 
 services:
   backend:
-    build: ./backend
+    build:
+      context: ./backend
+      dockerfile: ../Dockerfile.backend
     container_name: job-matcher-backend
     ports:
       - "8000:8000"
@@ -11,7 +13,9 @@ services:
     restart: always
 
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      dockerfile: ../Dockerfile.frontend
     container_name: job-matcher-frontend
     ports:
       - "80:80"
