@@ -1,24 +1,11 @@
 version: '3.8'
 
 services:
-  backend:
-    build:
-      context: ./backend
-      dockerfile: ../Dockerfile.backend
-    container_name: job-matcher-backend
+  app:
+    build: .
+    container_name: job-matcher
     ports:
-      - "8000:8000"
+      - "8080:8080"
     environment:
       - GEMINI_API_KEY=${GEMINI_API_KEY}
-    restart: always
-
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: ../Dockerfile.frontend
-    container_name: job-matcher-frontend
-    ports:
-      - "80:80"
-    depends_on:
-      - backend
     restart: always

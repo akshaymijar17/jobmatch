@@ -1,5 +1,7 @@
 from fastapi import FastAPI, UploadFile, File, Form, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from typing import Optional
 import os
@@ -38,7 +40,7 @@ def read_root():
     return {"Hello": "World"}
 
 import shutil
-from utils import extract_text_from_pdf, scrape_job_description, analyze_job_match
+from backend.utils import extract_text_from_pdf, scrape_job_description, analyze_job_match
 
 @app.post("/analyze")
 @limiter.limit("1/minute")
@@ -73,6 +75,19 @@ async def analyze_job(request: Request, job_url: str = Form(...), resume: Upload
         "analysis": result.get("analysis"),
         "company_analysis": result.get("company_analysis")
     }
+
+# Mount static files (built React app)
+# Check if static directory exists (for production)
+if os.path.exists("static"):
+    app.mount("/static", StaticFiles(directory="static"), name="static")
+    
+    # Catch-all route to serve React app for client-side routing
+    @app.get("/{full_path:path}")
+    async def serve_react_app(full_path: str):
+        # Don't catch API routes
+        if full_path.startswith("analyze") or full_path.startswith("docs") or full_path.startswith("openapi"):
+            return {"error": "Not found"}
+        return FileResponse("static/index.html")
 
 if __name__ == "__main__":
     import uvicorn

@@ -27,8 +27,8 @@ function App() {
     formData.append('resume', resume);
 
     try {
-      // API path for DigitalOcean App Platform routing
-      const response = await fetch('/api/analyze', {
+      // Same origin - no prefix needed
+      const response = await fetch('/analyze', {
         method: 'POST',
         body: formData,
       });
