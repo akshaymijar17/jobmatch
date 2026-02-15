@@ -5,7 +5,7 @@ services:
     build: .
     container_name: job-matcher
     ports:
-      - "8080:8080"
+      - "8000:8000"
     environment:
       - GEMINI_API_KEY=${GEMINI_API_KEY}
     restart: always

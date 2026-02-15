@@ -26,7 +26,7 @@ COPY backend/ ./backend
 COPY --from=build-frontend /app/frontend/dist ./static
 
 # Expose port
-EXPOSE 8080
+EXPOSE 8000
 
 # Run the application
-CMD ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8080"]
+CMD ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8000"]

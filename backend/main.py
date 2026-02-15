@@ -72,20 +72,27 @@ async def analyze_job(request: Request, job_url: str = Form(...), resume: Upload
         "company_analysis": result.get("company_analysis")
     }
 
-# Mount static files (built React app)
-# This must come AFTER all API routes are defined
-if os.path.exists("static"):
-    # Catch-all route to serve React app - must be defined BEFORE mounting static files
-    @app.get("/{full_path:path}")
-    async def serve_react_app(full_path: str):
-        # Don't catch API routes or static assets
-        if full_path.startswith("analyze") or full_path.startswith("docs") or full_path.startswith("openapi") or full_path.startswith("static"):
-            return {"error": "Not found"}
-        # Serve index.html for all other paths (including root "/")
-        return FileResponse("static/index.html")
+# Static file serving for the unified monolith
+# Get absolute path to static directory
+STATIC_DIR = os.path.join(os.path.dirname(__file__), "..", "static")
+
+# Mount static assets (JS, CSS, images) at /assets
+if os.path.exists(os.path.join(STATIC_DIR, "assets")):
+    app.mount("/assets", StaticFiles(directory=os.path.join(STATIC_DIR, "assets")), name="assets")
+
+# Serve index.html for all non-API routes
+@app.get("/{full_path:path}")
+async def serve_react_app(full_path: str):
+    # Don't catch API routes or asset requests
+    if full_path.startswith("analyze") or full_path.startswith("docs") or full_path.startswith("openapi") or full_path.startswith("assets"):
+        return {"error": "Not found"}
     
-    # Mount static assets at /static
-    app.mount("/static", StaticFiles(directory="static"), name="static")
+    # Serve index.html for all other paths
+    index_path = os.path.join(STATIC_DIR, "index.html")
+    if os.path.exists(index_path):
+        return FileResponse(index_path)
+    else:
+        return {"error": "Frontend not built", "static_dir": STATIC_DIR, "exists": os.path.exists(STATIC_DIR)}
 
 if __name__ == "__main__":
     import uvicorn
