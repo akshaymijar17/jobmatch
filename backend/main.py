@@ -35,10 +35,6 @@ app.add_middleware(
 class AnalysisRequest(BaseModel):
     job_url: str
 
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
-
 import shutil
 from backend.utils import extract_text_from_pdf, scrape_job_description, analyze_job_match
 
@@ -77,17 +73,19 @@ async def analyze_job(request: Request, job_url: str = Form(...), resume: Upload
     }
 
 # Mount static files (built React app)
-# Check if static directory exists (for production)
+# This must come AFTER all API routes are defined
 if os.path.exists("static"):
-    app.mount("/static", StaticFiles(directory="static"), name="static")
-    
-    # Catch-all route to serve React app for client-side routing
+    # Catch-all route to serve React app - must be defined BEFORE mounting static files
     @app.get("/{full_path:path}")
     async def serve_react_app(full_path: str):
-        # Don't catch API routes
-        if full_path.startswith("analyze") or full_path.startswith("docs") or full_path.startswith("openapi"):
+        # Don't catch API routes or static assets
+        if full_path.startswith("analyze") or full_path.startswith("docs") or full_path.startswith("openapi") or full_path.startswith("static"):
             return {"error": "Not found"}
+        # Serve index.html for all other paths (including root "/")
         return FileResponse("static/index.html")
+    
+    # Mount static assets at /static
+    app.mount("/static", StaticFiles(directory="static"), name="static")
 
 if __name__ == "__main__":
     import uvicorn
